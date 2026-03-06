@@ -1,41 +1,53 @@
 import os
+import sys
 from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
-apikey = os.getenv("API_Key")
+apikey = os.getenv("API_KEY")
 client=genai.Client(api_key=apikey)
+
 
 def modelchoose():
     while True:
-        model_choice = input("Choose Model Number:\n1. Gemini 2.5 Flash \n2.Gemini 3.0 Flash \n3.Gemini 3.1 Pro \nModel Number: ")
-        if model_choice == "1":
-            return "gemini-2.5-flash"
+        model_choice = input("Choose Model:\nGemini (2.5) Flash \nGemini (3.0) Flash \nGemini (3.1) Pro \nGemini Version: ")
+        if model_choice == "2.5":
+            return "Gemini 2.5 flash", "gemini-2.5-flash"
 
-        elif model_choice == "2":
-            return "gemini-3-flash-preview"
-
-        elif model_choice == "3":
-            return "gemini-3.1-pro-preview"
-
+        elif model_choice == "3.0":
+            return "Gemini 3.0 flash", "gemini-3-flash-preview"
+        elif model_choice == "3.1":
+            return "Gemini 3.1 pro", "gemini-3.1-pro-preview"
+        elif model_choice == "exit" or model_choice == "/exit":
+            print("Goodbye")
+            sys.exit()
         else:
-            print("invalide model number")
+            print("invalid model")
 
-chosen_model = modelchoose()
-        
-        
 
-chat = client.chats.create(model= chosen_model)
+model_name, chosen_model = modelchoose()
+
+chat = client.chats.create(
+    model= chosen_model,
+    config={
+        "system_instruction": "respond in plain text only. Do not use markdown or stars (**). Always use the metric system. The Users name is Admin."
+    }                           )
+
+
+
 query =""
 
-while query != "/exit":
+print("\n—> starting Chat with ", model_name, "<—")
 
-    if query == "/exit":
+while True:
+    query=input("\nType Query: ")
+    if query == "/exit" or query == "exit":
         print("Goodbye")
         break
+    print("\nGemini: ", end="", flush=True)
 
-    query=input("Type Query: ")
+    response_stream= chat.send_message_stream(query)
+    for chunk in response_stream:
+        print(chunk.text, end="", flush=True)
 
-    response= chat.send_message(query)
-
-    print("Gemini: ", response.text)
+    print()
