@@ -34,7 +34,7 @@ def modelchoose():
             return "Gemini 3.0 flash", "gemini-3-flash-preview"
         elif model_choice == "3.1":
             return "Gemini 3.1 pro", "gemini-3.1-pro-preview"
-        elif model_choice == "exit" or model_choice == "/exit":
+        elif model_choice.lower() == "exit" or model_choice.lower() == "/exit":
             print("Goodbye")
             sys.exit()
         else:
@@ -49,7 +49,7 @@ chat = client.chats.create(
         "system_instruction": "respond in plain text only. Do not use markdown or stars (**). Always use the metric system. The Users name is Admin.",
         "tools": [
             types.Tool(
-                google_search=GoogleSearchRetrieval(
+                google_search=types.GoogleSearchRetrieval(
                     dynamic_retrieval_config=types.DynamicRetrievalConfig(
                         dynamic_threshold=0.4
                     )
@@ -67,7 +67,7 @@ print("\n—> starting Chat with ", model_name, "<—")
 
 while True:
     query=input("\nType Query: ")
-    if query == "/exit" or query == "exit":
+    if query.lower() == "/exit" or query.lower() == "exit":
         print("Goodbye")
         break
     print("\nGemini: ", end="", flush=True)
