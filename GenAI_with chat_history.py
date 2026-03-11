@@ -2,7 +2,7 @@ import os
 import sys
 from google import genai
 from dotenv import load_dotenv
-
+from google.genai import types
 print(r"""
   ██████╗   ██████╗   ██████╗   ██████╗  ██╗      ███████╗
  ██╔════╝  ██╔═══██╗ ██╔═══██╗ ██╔════╝  ██║      ██╔════╝
@@ -46,8 +46,18 @@ model_name, chosen_model = modelchoose()
 chat = client.chats.create(
     model= chosen_model,
     config={
-        "system_instruction": "respond in plain text only. Do not use markdown or stars (**). Always use the metric system. The Users name is Admin."
-    }                           )
+        "system_instruction": "respond in plain text only. Do not use markdown or stars (**). Always use the metric system. The Users name is Admin.",
+        "tools": [
+            types.Tool(
+                google_search=GoogleSearchRetrieval(
+                    dynamic_retrieval_config=types.DynamicRetrievalConfig(
+                        dynamic_threshold=0.4
+                    )
+                   )
+                 )
+              ]                             
+        }
+)
 
 
 
